@@ -77,17 +77,43 @@ def get_parent_links_from_soup(soup):
 
     OUTPUT
     ---------
-    parents (list) : list containing the parent hrefs as strings
+    (list) : list containing the parent hrefs as strings
     '''
-
     parent_divs = (
             soup.find(class_ = 'lineage__left-parent'),
             soup.find(class_ = 'lineage__right-parent'),
             soup.find(class_ = 'lineage__center-parent')
         )
 
-    # site + href because the links are in the form /strains/<strain name>
     return [ parent.a.get('href') for parent in parent_divs if parent is not None ]
+
+
+def get_child_links_from_soup(soup):
+    '''
+    Scrapes Strain page to find child strain links
+
+    INPUT
+    ---------
+    soup (BeautifulSoup) : BeautifulSoup object representing the strain page
+
+
+    OUTPUT
+    ---------
+    (list) : list containing the child hrefs as strings
+    '''
+    child_divs = (
+            soup.find(class_='lineage__left-child--two-parents'),
+            soup.find(class_='lineage__left-child--two-parents'),
+            soup.find(class_='lineage__center-child--two-parents'),
+            soup.find(class_='lineage__left-child--single-parent'),
+            soup.find(class_='lineage__right-child--single-parent'),
+            soup.find(class_='lineage__center-child--single-parent'),
+            soup.find(class_='lineage__left-child--no-parents'),
+            soup.find(class_='lineage__right-child--no-parents'),
+            soup.find(class_='lineage__center-child--no-parents')
+        )
+
+    return [ child.a.get('href') for child in child_divs if child is not None ]
 
 
 def get_name_from_soup(soup):
@@ -125,7 +151,8 @@ def get_name(url):
 
 def get_parents_links(url):
     '''
-    Calls get_soup() and _get_parents() to get strain parents' url extensions as a string
+    Calls get_soup() and get_parent_links_from_soup() to
+    get strain parents' url extensions as a string
 
     INPUT
     ---------
@@ -134,17 +161,61 @@ def get_parents_links(url):
 
     OUTPUT
     ---------
-    parents (list) : list containing the parent hrefs as strings
+    (list) : list containing the parent hrefs as strings
     '''
     soup = get_soup(url)
     return get_parent_links_from_soup(soup)
 
 
+def get_child_links(url):
+    '''
+    Calls get_soup() and get_child_links_from_soup()
+    to get strain parents' url extensions as a string
+
+    INPUT
+    ---------
+    url (string) : BeautifulSoup object representing the strain page
+
+
+    OUTPUT
+    ---------
+    (list) : list containing the child hrefs as strings
+    '''
+    soup = get_soup(url)
+    return get_child_links_from_soup(soup)
+
+
 def get_name_and_parent_links(url):
     '''
-    Calls get_soup(), get_name_from_soup(), and get_parent_links_from_soup() to get strain parents' url extensions as a string
+    Calls get_soup(), get_name_from_soup(), and get_parent_links_from_soup()
+    to get strain's parents' url extensions as a string
 
-    Having a version of these functions combined like this is useful to avoid requesting the same webpage twice
+    Having a version of these functions combined like this is
+    useful to avoid requesting the same webpage twice
+
+    INPUT
+    ---------
+    url (string) : BeautifulSoup object representing the strain page
+
+
+    OUTPUT
+    ---------
+    name (string) : name of strain
+    parent_links (list) : list containing the parent hrefs as strings
+    '''
+    soup = get_soup(url)
+    name = get_name_from_soup(soup)
+    parent_links = get_parent_links_from_soup(soup)
+    return name, parents
+
+
+def get_name_and_child_links(url):
+    '''
+    Calls get_soup(), get_name_from_soup(), and get_child_links_from_soup()
+    to get strain's children's url extensions as a string
+
+    Having a version of these functions combined like this is
+    useful to avoid requesting the same webpage twice
 
     INPUT
     ---------
@@ -158,5 +229,22 @@ def get_name_and_parent_links(url):
     '''
     soup = get_soup(url)
     name = get_name_from_soup(soup)
-    parents = get_parent_links_from_soup(soup)
-    return name, parents
+    child_links = get_child_links_from_soup(soup)
+    return name, child_links
+
+
+def main():
+    url = 'https://www.leafly.com/strains/green-crack'
+
+    name, children = get_name_and_child_links(url)
+
+    print(name)
+
+    for child in children:
+        print(child)
+
+
+
+
+if __name__ == '__main__':
+    main()
