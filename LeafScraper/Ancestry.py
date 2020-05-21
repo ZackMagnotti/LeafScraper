@@ -3,7 +3,7 @@ import sys
 
 import scraper
 import util
-from strain import StrainAncestryNode
+from strain import StrainAncesterNode
 
 '''
 Best trees:
@@ -86,7 +86,7 @@ def recursive_generate_tree(parent_links):
             if '/strains/purple-kush' in grandparent_links:
                 grandparent_links.remove('/strains/purple-kush')
 
-        parent_node = StrainAncestryNode(parent_name, parent_url)
+        parent_node = StrainAncesterNode(parent_name, parent_url)
         parent_node.strain_parents = recursive_generate_tree(grandparent_links)
         return parent_node
 
@@ -133,7 +133,7 @@ def main():
     '''
     print(message)
 
-    root = StrainAncestryNode(root_name, root_url)        
+    root = StrainAncesterNode(root_name, root_url)        
     root.strain_parents = recursive_generate_tree(parent_links)
 
     message = f'''\n

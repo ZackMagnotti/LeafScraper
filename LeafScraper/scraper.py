@@ -206,7 +206,7 @@ def get_name_and_parent_links(url):
     soup = get_soup(url)
     name = get_name_from_soup(soup)
     parent_links = get_parent_links_from_soup(soup)
-    return name, parents
+    return name, parent_links
 
 
 def get_name_and_child_links(url):

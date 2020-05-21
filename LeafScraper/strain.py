@@ -17,7 +17,7 @@ class Strain:
         return self._url
     
 
-class StrainAncestryNode(Strain, anytree.NodeMixin):
+class StrainAncesterNode(Strain, anytree.NodeMixin):
 
     def __init__(self, name, url, strain_child=None, strain_parents=None):
         """
