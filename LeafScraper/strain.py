@@ -80,7 +80,7 @@ class StrainAncesterNode(Strain, anytree.NodeMixin):
         '''
         Tuple of strains who all parent the same child
         '''
-        return self.siblings    
+        return self.siblings
 
     def show_tree(self):
         print(anytree.RenderTree(self).by_attr('name'), '\n')
@@ -101,3 +101,6 @@ class StrainDescendantNode(Strain, anytree.NodeMixin):
         self.parent = parent
         if children:
             self.children = children
+
+    def show_tree(self):
+        print(anytree.RenderTree(self).by_attr('name'), '\n')
