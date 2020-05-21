@@ -103,7 +103,7 @@ def get_child_links_from_soup(soup):
     '''
     child_divs = (
             soup.find(class_='lineage__left-child--two-parents'),
-            soup.find(class_='lineage__left-child--two-parents'),
+            soup.find(class_='lineage__right-child--two-parents'),
             soup.find(class_='lineage__center-child--two-parents'),
             soup.find(class_='lineage__left-child--single-parent'),
             soup.find(class_='lineage__right-child--single-parent'),

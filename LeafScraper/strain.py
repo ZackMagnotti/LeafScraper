@@ -17,7 +17,7 @@ class Strain:
         return self._url
     
 
-class StrainAncesterNode(Strain, anytree.NodeMixin):
+class StrainAncestorNode(Strain, anytree.NodeMixin):
 
     def __init__(self, name, url, strain_child=None, strain_parents=None):
         """
@@ -86,9 +86,9 @@ class StrainAncesterNode(Strain, anytree.NodeMixin):
         print(anytree.RenderTree(self).by_attr('name'), '\n')
     
 
-class StrainDescendantNode(Strain, anytree.NodeMixin):
+class StrainDescendentNode(Strain, anytree.NodeMixin):
 
-    def __init__(self, name, url, parent, children):
+    def __init__(self, name, url, parent=None, children=None):
         '''
         NOT YET IMPLEMENTED
 

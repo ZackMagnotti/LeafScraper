@@ -4,9 +4,9 @@ class URLError(ValueError):
     '''
     pass
 
-https, www, site, extension = 'https://', 'www.', 'leafly.com', '/strains'
+https, www, site, extension = 'https://', 'www.', 'leafly.com', '/strains/'
 
-url_template = [https, www, site, extension, '/']
+url_template = [https, www, site, extension]
 
 template_string = ''.join(url_template)
 
@@ -34,3 +34,11 @@ def sanitized_url(input_url):
         raise URLError("Invalid URL")
 
     return url
+
+
+def main():
+    print(sanitized_url('/strains/aienen-dawg'))
+
+
+if __name__ == '__main__':
+    main()
