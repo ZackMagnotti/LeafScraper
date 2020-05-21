@@ -1,4 +1,4 @@
-# Strain Lineage
+# LeafScraper
 
 This package contains modules to scrape Leafly.com for various information.
 
