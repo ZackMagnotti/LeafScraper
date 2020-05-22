@@ -28,7 +28,6 @@ def get_parent_node(parent_url, recursive_function):
 
     return parent_node
 
-    
 
 def get_child_node(child_url, recursive_function):
 
@@ -43,8 +42,8 @@ def recursive_generate_tree(links, function):
 
     def get_node(link, function):
         # printing a long space and then '\r' clears previous output
-        print(' '*50, end='\r')
-        print(f'fetching info from {link}', end='\r')
+        print(' '*60, end='\r')
+        print(f'    fetching info from {link}', end='\r')
         url = util.sanitized_url(link)
         return function(url, recursive_generate_tree)
 
@@ -56,34 +55,151 @@ def recursive_generate_tree(links, function):
     return nodes
 
 
-def main():
-    url = 'https://www.leafly.com/strains/afghani'
-
-    string = '''
-    ------------------------
-     Afgani Descendant Tree
-    ------------------------
+def generate_ancester_tree(root_url):
+    name, parent_links = scraper.get_name_and_parent_links(root_url)
+    message = f'''
+    -------------------------------
+    Root strain : {name}
+    -------------------------------
     '''
+    print(message)
+    root = StrainAncestorNode(name, root_url)
+    root.strain_parents = recursive_generate_tree(parent_links, get_parent_node)
+    return root
 
-    print(string)
 
-    node_type = 'descendant'
+def generate_descendant_tree(root_url):
+    name, child_links = scraper.get_name_and_child_links(root_url)
+    message = f'''
+    -------------------------------
+    Root strain : {name}
+    -------------------------------
+    '''
+    print(message)
+    root = StrainDescendantNode(name, root_url)
+    root.children = recursive_generate_tree(child_links, get_child_node)
+    return root
 
-    if node_type.lower() == 'ancestor':
-        name, parent_links = scraper.get_name_and_parent_links(url)
-        root = StrainAncestorNode(name, url)
-        root.strain_parents = recursive_generate_tree(parent_links, get_parent_node)
 
-    elif node_type.lower() == 'descendant':
-        name, child_links = scraper.get_name_and_child_links(url)
-        root = StrainDescendantNode(name, url)
-        root.children = recursive_generate_tree(child_links, get_child_node)
+main_options = '''
 
-    else:
-        print('invalid')
-        sys.exit()
+    More options:
 
-    print('\n')
+    (help)
+    (info)
+    (quit)
+
+
+    >>'''
+
+greeting = '''
+
+    Welcome to Leaf Scraper!
+
+    Enter the name or Leafly.com
+    url of any cannabis strain
+'''
+
+help_message = '''
+
+    <HELP>
+
+    Type the name of a cannabis strain
+    or copy paste the url of that strain's 
+    Leafly.com page into the terminal to 
+    see that strain's lineage
+'''
+
+info = '''
+
+    <INFO>
+
+    Some of the best trees:
+
+    (ancestry)
+    leafly.com/strains/purple-roze
+    leafly.com/strains/ice-cream-cake
+    leafly.com/strains/high-noon-irish-cream
+    leafly.com/strains/bonkers
+    leafly.com/strains/superstar
+    leafly.com/strains/future-1
+    leafly.com/strains/drizella
+'''
+
+tree_options = '''
+
+    Tree Options:
+
+    (ancestors)
+    (descendants)
+    (quit)
+
+
+    >>'''
+
+invalid = '''
+    INVALID'''
+
+def get_input(message):
+    return input(message).lower()
+
+
+def space_to_dash(name):
+    return name.replace(' ', '-')
+
+
+def main():
+
+    # MAIN MENU
+    user_input = get_input(greeting + main_options)
+
+    while True:
+        if user_input == 'help':
+            user_input = get_input(help_message+main_options)
+
+        elif user_input == 'info':
+            user_input = get_input(info+main_options)
+
+        elif user_input == 'quit':
+            print('\n    Bye!')
+            sys.exit()
+            break
+
+        else:
+            break
+
+    root_url = util.sanitized_url(space_to_dash(user_input))
+
+    # Tree Menu
+    while True:
+
+        user_input = get_input(tree_options)
+
+        if user_input == 'ancestors':
+            root = generate_ancester_tree(root_url)
+            break
+
+        elif user_input == 'descendants':
+            root = generate_descendant_tree(root_url)
+            break
+
+        elif user_input == 'quit':
+            print('\n    Bye!')
+            sys.exit()
+            break
+
+        else:
+            print(invalid)
+
+    # printing a long space and then '\r' clears previous output
+    print(' '*50, end='\r')
+    print('    Done!')
+    message = f'''
+    -------------------------------
+    {root.name} Ancestry Tree
+    -------------------------------
+    '''
+    print(message)
 
     root.show_tree()
     
