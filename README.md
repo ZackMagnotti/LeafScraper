@@ -2,9 +2,8 @@
 
 This package contains modules to scrape Leafly.com for various information.
 
-## Ancestry
-
-This module searches pages in the strain database and generates ancestry trees for a given input strain.
+leafscraper.py will take in the name or url of any strain on leafly.com, and
+generate a tree of either the strain's ancestors or descendants.
 
 ## Python 3.8
 
