@@ -5,23 +5,45 @@ from bs4 import BeautifulSoup
 class PageNotFoundError(Exception):
     pass
 
+class LineageNotFoundError(Exception):
+    pass
+
 def is404(soup):
     '''
     Function to check if a page is the 404 error page
 
     INPUT
     ---------
-    soup (BeautifulSoup) : the page to chec, as a BeautifulSoup object
+    soup (BeautifulSoup) : the page to check, as a BeautifulSoup object
 
 
     OUTPUT
     ---------
     (bool) : True if page is 404, false otherwise
-
     '''
     if '404' in soup.head.title.text:
         return True
     return False
+
+
+def lineage_not_found(soup):
+    '''
+    Function takes in Beautiful Soup object of
+    strain page and determines if page has lineage data
+
+    INPUT
+    ---------
+    soup (BeautifulSoup) : the page to check, as a BeautifulSoup object
+
+
+    OUTPUT
+    ---------
+    (bool) : True if page has no lineage data, false otherwise
+    '''
+    headers = [h2.text.lower() for h2 in soup.find_all('h2')]
+    if 'lineage' in headers:
+        return False
+    return True
 
 
 def get_html_from_site(url):
@@ -79,6 +101,9 @@ def get_parent_links_from_soup(soup):
     ---------
     (list) : list containing the parent hrefs as strings
     '''
+    if lineage_not_found(soup):
+        raise LineageNotFoundError
+
     parent_divs = (
             soup.find(class_ = 'lineage__left-parent'),
             soup.find(class_ = 'lineage__right-parent'),
@@ -101,6 +126,9 @@ def get_child_links_from_soup(soup):
     ---------
     (list) : list containing the child hrefs as strings
     '''
+    if lineage_not_found(soup):
+        raise LineageNotFoundError
+
     child_divs = (
             soup.find(class_='lineage__left-child--two-parents'),
             soup.find(class_='lineage__right-child--two-parents'),

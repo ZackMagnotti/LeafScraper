@@ -7,7 +7,13 @@ from strain import StrainAncestorNode, StrainDescendantNode
 
 def get_parent_node(parent_url, recursive_function):
 
-    parent_name, grandparent_links = scraper.get_name_and_parent_links(parent_url)
+    try:
+        parent_name, grandparent_links = scraper.get_name_and_parent_links(parent_url)
+    
+    except scraper.LineageNotFoundError:
+        parent_name = scraper.get_name(parent_url)
+        grandparent_links = []
+
     '''
     HOTFIX
 
@@ -23,16 +29,24 @@ def get_parent_node(parent_url, recursive_function):
             grandparent_links.remove('/strains/purple-kush')
 
     parent_node = StrainAncestorNode(parent_name, parent_url)
-    parent_node.strain_parents = recursive_function(grandparent_links, get_parent_node)
+    if grandparent_links:
+        parent_node.strain_parents = recursive_function(grandparent_links, get_parent_node)
 
     return parent_node
 
 
 def get_child_node(child_url, recursive_function):
 
-    child_name, grandchild_links = scraper.get_name_and_child_links(child_url)
+    try:
+        child_name, grandchild_links = scraper.get_name_and_child_links(child_url)
+
+    except scraper.LineageNotFoundError:
+        child_name = scraper.get_name(child_url)
+        grandchild_links = []
+
     child_node = StrainDescendantNode(child_name, child_url)
-    child_node.children = recursive_function(grandchild_links, get_child_node)
+    if grandchild_links:
+        child_node.children = recursive_function(grandchild_links, get_child_node)
 
     return child_node
 
@@ -43,7 +57,7 @@ def recursive_generate_tree(links, function):
         # printing a long space and then '\r' clears previous output
         print(' '*60, end='\r')
         print(f'    fetching info from {link}', end='\r')
-        url = util.sanitized_url(link)
+        url = util.sanitized_url(link) 
         return function(url, recursive_generate_tree)
 
     # Threading allows script to make multiple http requests simultaneously to save time
@@ -55,7 +69,19 @@ def recursive_generate_tree(links, function):
 
 
 def generate_ancester_tree(root_url):
-    name, parent_links = scraper.get_name_and_parent_links(root_url)
+    try:
+        name, parent_links = scraper.get_name_and_parent_links(root_url)
+
+    except scraper.LineageNotFoundError:
+        name = scraper.get_name(root_url)
+        message = f'''
+    -------------------------------
+    No Lineage Data for {name}
+    -------------------------------
+        '''
+        print(message)
+        raise scraper.LineageNotFoundError
+
     message = f'''
     -------------------------------
     Root strain : {name}
@@ -68,7 +94,19 @@ def generate_ancester_tree(root_url):
 
 
 def generate_descendant_tree(root_url):
-    name, child_links = scraper.get_name_and_child_links(root_url)
+    try:
+        name, child_links = scraper.get_name_and_child_links(root_url)
+
+    except scraper.LineageNotFoundError:
+        name = scraper.get_name(root_url)
+        message = f'''
+    -------------------------------
+    No Lineage Data for {name}
+    -------------------------------
+        '''
+        print(message)
+        raise scraper.LineageNotFoundError
+
     message = f'''
     -------------------------------
     Root strain : {name}
@@ -197,6 +235,9 @@ def main():
 
             else:
                 print(invalid)
+
+    except scraper.LineageNotFoundError:
+        pass
         
     except scraper.PageNotFoundError:
         print(f'''\n    Sorry! The page for "{name}" doesn't exist''')
@@ -205,18 +246,18 @@ def main():
             return True
         return False
 
+    else:
+        # printing a long space and then '\r' clears previous output
+        print(' '*50, end='\r')
+        print('    Done!')
+        message = f'''
+        -------------------------------
+        {root.name} Ancestry Tree
+        -------------------------------
+        '''
+        print(message)
 
-    # printing a long space and then '\r' clears previous output
-    print(' '*50, end='\r')
-    print('    Done!')
-    message = f'''
-    -------------------------------
-    {root.name} Ancestry Tree
-    -------------------------------
-    '''
-    print(message)
-
-    root.show_tree()
+        root.show_tree()
 
     user_input = get_input('\nGo again? (y/n) : ')
     if user_input == 'yes' or user_input == 'y':
