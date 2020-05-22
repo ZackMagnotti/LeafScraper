@@ -55,8 +55,7 @@ def recursive_generate_tree(links, function):
 
     def get_node(link, function):
         # printing a long space and then '\r' clears previous output
-        print(' '*60, end='\r')
-        print(f'    fetching info from {link}', end='\r')
+        print(f'    fetching info from {link}' + ' '*20, end='\r')
         url = util.sanitized_url(link) 
         return function(url, recursive_generate_tree)
 
@@ -248,12 +247,11 @@ def main():
 
     else:
         # printing a long space and then '\r' clears previous output
-        print(' '*50, end='\r')
-        print('    Done!')
+        print('\r    Done!' + ' '*60)
         message = f'''
-        -------------------------------
-        {root.name} Ancestry Tree
-        -------------------------------
+    -------------------------------
+    {root.name} Ancestry Tree
+    -------------------------------
         '''
         print(message)
 
