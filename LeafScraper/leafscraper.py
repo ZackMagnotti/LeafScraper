@@ -19,7 +19,7 @@ def get_parent_node(parent_url, recursive_function):
     purple-afghani -> purple-kush
     to destroy loop
     '''
-    if 'https://www.leafly.com//strains/purple-afghani' == parent_url:
+    if 'https://www.leafly.com/strains/purple-afghani' == parent_url:
         if '/strains/purple-kush' in grandparent_links:
             grandparent_links.remove('/strains/purple-kush')
 
@@ -64,7 +64,7 @@ def generate_ancester_tree(root_url):
     '''
     print(message)
     root = StrainAncestorNode(name, root_url)
-    root.strain_parents = recursive_generate_tree(parent_links, get_parent_node)
+    root.strain_parents = recursive_generate_tree(parent_links, function=get_parent_node)
     return root
 
 
@@ -77,7 +77,7 @@ def generate_descendant_tree(root_url):
     '''
     print(message)
     root = StrainDescendantNode(name, root_url)
-    root.children = recursive_generate_tree(child_links, get_child_node)
+    root.children = recursive_generate_tree(child_links, function=get_child_node)
     return root
 
 
