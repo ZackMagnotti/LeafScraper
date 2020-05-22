@@ -1,4 +1,4 @@
-import anytree
+from anytree import NodeMixin, RenderTree
 
 
 class Strain:
@@ -17,7 +17,7 @@ class Strain:
         return self._url
     
 
-class StrainAncestorNode(Strain, anytree.NodeMixin):
+class StrainAncestorNode(Strain, NodeMixin):
 
     def __init__(self, name, url, strain_child=None, strain_parents=None):
         """
@@ -83,10 +83,10 @@ class StrainAncestorNode(Strain, anytree.NodeMixin):
         return self.siblings
 
     def show_tree(self):
-        print(anytree.RenderTree(self).by_attr('name'), '\n')
+        print(RenderTree(self).by_attr('name'), '\n')
     
 
-class StrainDescendantNode(Strain, anytree.NodeMixin):
+class StrainDescendantNode(Strain, NodeMixin):
 
     def __init__(self, name, url, parent=None, children=None):
         '''
@@ -103,4 +103,4 @@ class StrainDescendantNode(Strain, anytree.NodeMixin):
             self.children = children
 
     def show_tree(self):
-        print(anytree.RenderTree(self).by_attr('name'), '\n')
+        print(RenderTree(self).by_attr('name'), '\n')

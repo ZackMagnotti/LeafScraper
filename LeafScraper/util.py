@@ -34,11 +34,3 @@ def sanitized_url(input_url):
         raise URLError("Invalid URL")
 
     return url
-
-
-def main():
-    print(sanitized_url('/strains/aienen-dawg'))
-
-
-if __name__ == '__main__':
-    main()

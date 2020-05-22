@@ -231,20 +231,3 @@ def get_name_and_child_links(url):
     name = get_name_from_soup(soup)
     child_links = get_child_links_from_soup(soup)
     return name, child_links
-
-
-def main():
-    url = 'https://www.leafly.com/strains/green-crack'
-
-    name, children = get_name_and_child_links(url)
-
-    print(name)
-
-    for child in children:
-        print(child)
-
-
-
-
-if __name__ == '__main__':
-    main()

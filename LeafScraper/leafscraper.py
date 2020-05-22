@@ -1,5 +1,4 @@
 import concurrent.futures as futures
-import sys
 
 import scraper
 import util
