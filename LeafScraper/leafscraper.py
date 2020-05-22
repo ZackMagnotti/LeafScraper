@@ -92,9 +92,7 @@ main_options = '''
 
     >>'''
 
-greeting = '''
-
-    Welcome to Leaf Scraper!
+main_message = '''
 
     Enter the name or Leafly.com
     url of any cannabis strain
@@ -110,7 +108,7 @@ help_message = '''
     see that strain's lineage
 '''
 
-info = '''
+info_message = '''
 
     <INFO>
 
@@ -132,6 +130,7 @@ tree_options = '''
 
     (ancestors)
     (descendants)
+    (back)
     (quit)
 
 
@@ -151,45 +150,62 @@ def space_to_dash(name):
 def main():
 
     # MAIN MENU
-    user_input = get_input(greeting + main_options)
+    user_input = get_input(main_message + main_options)
 
     while True:
         if user_input == 'help':
             user_input = get_input(help_message+main_options)
 
         elif user_input == 'info':
-            user_input = get_input(info+main_options)
+            user_input = get_input(info_message+main_options)
 
         elif user_input == 'quit':
-            print('\n    Bye!')
-            sys.exit()
-            break
+            return False
 
         else:
             break
-
-    root_url = util.sanitized_url(space_to_dash(user_input))
+    
+    try:
+        name = user_input
+        root_url = util.sanitized_url(space_to_dash(user_input))
+    
+    except util.URLError:
+        print("\n    Sorry! Looks like we couldn't turn your input into a valid Leafly.com/strains url")
+        user_input = input('\n    Try again? (y/n): ')
+        if user_input == 'yes' or user_input == 'y':
+            return True
+        return False
 
     # Tree Menu
-    while True:
+    try:
+        while True:
 
-        user_input = get_input(tree_options)
+            user_input = get_input(tree_options)
 
-        if user_input == 'ancestors':
-            root = generate_ancester_tree(root_url)
-            break
+            if user_input == 'ancestors':
+                root = generate_ancester_tree(root_url)
+                break
 
-        elif user_input == 'descendants':
-            root = generate_descendant_tree(root_url)
-            break
+            elif user_input == 'descendants':
+                root = generate_descendant_tree(root_url)
+                break
 
-        elif user_input == 'quit':
-            print('\n    Bye!')
-            sys.exit()
-            break
+            elif user_input == 'back':
+                return True
 
-        else:
-            print(invalid)
+            elif user_input == 'quit':
+                return False
+
+            else:
+                print(invalid)
+        
+    except scraper.PageNotFoundError:
+        print(f'''\n    Sorry! The page for "{name}" doesn't exist''')
+        user_input = input('\n    Try again? (y/n): ')
+        if user_input == 'yes' or user_input == 'y':
+            return True
+        return False
+
 
     # printing a long space and then '\r' clears previous output
     print(' '*50, end='\r')
@@ -202,6 +218,17 @@ def main():
     print(message)
 
     root.show_tree()
+
+    user_input = get_input('\nGo again? (y/n) : ')
+    if user_input == 'yes' or user_input == 'y':
+        return True
+    return False
+
     
 if __name__ == '__main__':
-    main()
+    greeting = '''\n\n    Welcome to Leaf Scraper!'''
+    print(greeting)
+    while main():
+        pass
+    print('\n    Bye!')
+    input()
