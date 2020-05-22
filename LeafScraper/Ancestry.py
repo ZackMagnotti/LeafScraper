@@ -138,7 +138,7 @@ def main():
 
     message = f'''\n
     -------------------------------
-    {root_name} Family Tree
+    {root_name} Ancestry Tree
     -------------------------------
     '''
     print(message)

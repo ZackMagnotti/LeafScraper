@@ -68,7 +68,7 @@ class StrainAncestorNode(Strain, anytree.NodeMixin):
         del self.children
 
     @property
-    def strain_descendents(self):
+    def strain_descendants(self):
         return self.ancestors
 
     @property
@@ -86,7 +86,7 @@ class StrainAncestorNode(Strain, anytree.NodeMixin):
         print(anytree.RenderTree(self).by_attr('name'), '\n')
     
 
-class StrainDescendentNode(Strain, anytree.NodeMixin):
+class StrainDescendantNode(Strain, anytree.NodeMixin):
 
     def __init__(self, name, url, parent=None, children=None):
         '''
