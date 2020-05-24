@@ -10,6 +10,7 @@ generate a tree of either the strain's ancestors or descendants.
 ```
 Package        Version
 -------------- ----------
+anytree        2.8.0
 beautifulsoup4 4.9.0
 bs4            0.0.1
 certifi        2020.4.5.1
