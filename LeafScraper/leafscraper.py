@@ -2,17 +2,12 @@ import concurrent.futures as futures
 
 import scraper
 import util
-from strain import StrainAncestorNode, StrainDescendantNode
+from strain import StrainAncestorNode
 
 
 def get_parent_node(parent_url, recursive_function):
 
-    try:
-        parent_name, grandparent_links = scraper.get_name_and_parent_links(parent_url)
-    
-    except scraper.LineageNotFoundError:
-        parent_name = scraper.get_name(parent_url)
-        grandparent_links = []
+    parent_name, grandparent_links = scraper.get_name_and_parent_links(parent_url)
 
     '''
     HOTFIX
@@ -24,6 +19,7 @@ def get_parent_node(parent_url, recursive_function):
     purple-afghani -> purple-kush
     to destroy loop
     '''
+
     if 'https://www.leafly.com/strains/purple-afghani' == parent_url:
         if '/strains/purple-kush' in grandparent_links:
             grandparent_links.remove('/strains/purple-kush')
@@ -33,22 +29,6 @@ def get_parent_node(parent_url, recursive_function):
         parent_node.strain_parents = recursive_function(grandparent_links, get_parent_node)
 
     return parent_node
-
-
-def get_child_node(child_url, recursive_function):
-
-    try:
-        child_name, grandchild_links = scraper.get_name_and_child_links(child_url)
-
-    except scraper.LineageNotFoundError:
-        child_name = scraper.get_name(child_url)
-        grandchild_links = []
-
-    child_node = StrainDescendantNode(child_name, child_url)
-    if grandchild_links:
-        child_node.children = recursive_function(grandchild_links, get_child_node)
-
-    return child_node
 
 
 def recursive_generate_tree(links, function):
@@ -68,18 +48,8 @@ def recursive_generate_tree(links, function):
 
 
 def generate_ancester_tree(root_url):
-    try:
-        name, parent_links = scraper.get_name_and_parent_links(root_url)
 
-    except scraper.LineageNotFoundError:
-        name = scraper.get_name(root_url)
-        message = f'''
-    -------------------------------
-    No Lineage Data for {name}
-    -------------------------------
-        '''
-        print(message)
-        raise scraper.LineageNotFoundError
+    name, parent_links = scraper.get_name_and_parent_links(root_url)
 
     message = f'''
     -------------------------------
@@ -87,33 +57,10 @@ def generate_ancester_tree(root_url):
     -------------------------------
     '''
     print(message)
+
     root = StrainAncestorNode(name, root_url)
     root.strain_parents = recursive_generate_tree(parent_links, function=get_parent_node)
-    return root
 
-
-def generate_descendant_tree(root_url):
-    try:
-        name, child_links = scraper.get_name_and_child_links(root_url)
-
-    except scraper.LineageNotFoundError:
-        name = scraper.get_name(root_url)
-        message = f'''
-    -------------------------------
-    No Lineage Data for {name}
-    -------------------------------
-        '''
-        print(message)
-        raise scraper.LineageNotFoundError
-
-    message = f'''
-    -------------------------------
-    Root strain : {name}
-    -------------------------------
-    '''
-    print(message)
-    root = StrainDescendantNode(name, root_url)
-    root.children = recursive_generate_tree(child_links, function=get_child_node)
     return root
 
 
@@ -158,32 +105,19 @@ info_message = '''
     leafly.com/strains/superstar
     leafly.com/strains/future-1
     leafly.com/strains/drizella
+    leafly.com/strains/cherry-cheesecake
+    leafly.com/strains/moonrise
 '''
 
-tree_options = '''
-
-    Tree Options:
-
-    (ancestors)
-    (descendants)
-    (back)
-    (quit)
-
-
-    >>'''
-
-invalid = '''
-    INVALID'''
 
 def get_input(message):
     return input(message).lower()
 
 
-def space_to_dash(name):
-    return name.replace(' ', '-')
-
-
 def main():
+
+    greeting = '''\n\n    Welcome to Leaf Scraper!'''
+    print(greeting)
 
     # MAIN MENU
     user_input = get_input(main_message + main_options)
@@ -201,9 +135,11 @@ def main():
         else:
             break
     
+    # Use input to generate tree
     try:
         name = user_input
-        root_url = util.sanitized_url(space_to_dash(user_input))
+        root_url = util.sanitized_url(user_input)
+        root = generate_ancester_tree(root_url)
     
     except util.URLError:
         print("\n    Sorry! Looks like we couldn't turn your input into a valid Leafly.com/strains url")
@@ -212,38 +148,23 @@ def main():
             return True
         return False
 
-    # Tree Menu
-    try:
-        while True:
-
-            user_input = get_input(tree_options)
-
-            if user_input == 'ancestors':
-                root = generate_ancester_tree(root_url)
-                break
-
-            elif user_input == 'descendants':
-                root = generate_descendant_tree(root_url)
-                break
-
-            elif user_input == 'back':
-                return True
-
-            elif user_input == 'quit':
-                return False
-
-            else:
-                print(invalid)
-
-    except scraper.LineageNotFoundError:
-        pass
-        
     except scraper.PageNotFoundError:
         print(f'''\n    Sorry! The page for "{name}" doesn't exist''')
         user_input = input('\n    Try again? (y/n): ')
         if user_input == 'yes' or user_input == 'y':
             return True
         return False
+
+
+    # If no lineage info found for root
+    # Display this message
+    if not root.strain_parents:
+        message = f'''
+    -------------------------------
+    No Lineage Data for {root.name}
+    -------------------------------
+        '''
+        print(message)
 
     else:
         # printing a long space and then '\r' clears previous output
@@ -257,15 +178,15 @@ def main():
 
         root.show_tree()
 
-    user_input = get_input('\nGo again? (y/n) : ')
+
+    # Ask user if they want to restart program
+    user_input = get_input('\n    Go again? (y/n) : ')
     if user_input == 'yes' or user_input == 'y':
         return True
     return False
 
     
 if __name__ == '__main__':
-    greeting = '''\n\n    Welcome to Leaf Scraper!'''
-    print(greeting)
     while main():
         pass
     print('\n    Bye!')
