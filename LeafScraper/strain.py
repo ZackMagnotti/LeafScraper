@@ -84,23 +84,3 @@ class StrainAncestorNode(Strain, NodeMixin):
 
     def show_tree(self):
         print(RenderTree(self).by_attr('name'), '\n')
-    
-
-class StrainDescendantNode(Strain, NodeMixin):
-
-    def __init__(self, name, url, parent=None, children=None):
-        '''
-        NOT YET IMPLEMENTED
-
-        Fills the opposite role as StrainAncestryNode
-
-        Data Structure meant for organizing all the 
-        descendents of a given strain
-        '''
-        Strain.__init__(self, name, url)
-        self.parent = parent
-        if children:
-            self.children = children
-
-    def show_tree(self):
-        print(RenderTree(self).by_attr('name'), '\n')

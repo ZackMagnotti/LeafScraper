@@ -1,6 +1,6 @@
 class URLError(ValueError):
     '''
-    Error raised when input url is invalid
+    Error raised when input url is invalidk
     '''
     pass
 
@@ -21,7 +21,7 @@ def sanitized_url(input_url):
 
     output -> https://www.example.com/extension/page
     '''
-    url = input_url
+    url = input_url.replace(' ', '-')
     for i, elem in enumerate(reversed(url_template)):
         if elem not in url:
             url = ''.join(url_template[:len(url_template)-i]) + url
