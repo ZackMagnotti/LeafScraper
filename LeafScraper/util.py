@@ -1,6 +1,6 @@
 class URLError(ValueError):
     '''
-    Error raised when input url is invalid
+    Error raised when input url is invalidk
     '''
     pass
 

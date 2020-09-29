@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 
-
 class PageNotFoundError(Exception):
     pass
 
@@ -22,7 +21,6 @@ def is404(soup):
         return True
     return False
 
-
 def lineage_not_found(soup):
     '''
     Function takes in Beautiful Soup object of
@@ -42,7 +40,6 @@ def lineage_not_found(soup):
         return False
     return True
 
-
 def get_html_from_site(url):
     '''
     Function takes url of a webpage and returns the HTML of that page as a string.
@@ -59,7 +56,6 @@ def get_html_from_site(url):
     (string) : the HTML of that page as a string
     '''
     return requests.get(url).text
-
 
 def get_soup(url):
     '''
@@ -86,7 +82,6 @@ def get_soup(url):
 
     return soup
 
-
 def get_parent_links_from_soup(soup):
     '''
     Scrapes Strain page to find parent strain links
@@ -109,7 +104,6 @@ def get_parent_links_from_soup(soup):
 
     return [ parent.a.get('href') for parent in parent_divs if parent ]
 
-
 def get_name_from_soup(soup):
     '''
     Scrapes strain page to find strain name
@@ -124,7 +118,6 @@ def get_name_from_soup(soup):
     (string) : name of strain
     '''
     return soup.find('h1', itemprop = 'name').text
-
 
 def get_name_and_parent_links(url):
     '''
